@@ -12,11 +12,14 @@
     <PackageReference Include="HockeySDK.Community.WPF" Version="4.1.7-pre0" />
     <PackageReference Include="LostTech.App.XmlSettings" Version="0.2.0-b2018071303" />
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="3.0.0" />
+    <PackageReference Include="System.Runtime.WindowsRuntime" Version="4.3.0" />
+    <PackageReference Include="System.Threading.Tasks" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
     <Reference Include="Windows">
       <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\UnionMetadata\Windows.winmd</HintPath>
@@ -30,6 +33,12 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </Page>
     <Compile Update="**\*.xaml.cs" SubType="Code" DependentUpon="%(Filename)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="LicenseTermsAcceptance.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,39 @@
+﻿<Window x:Class="LostTech.App.LicenseTermsAcceptance"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LostTech.App"
+        x:ClassModifier="internal"
+        mc:Ignorable="d"
+        ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen"
+        Title="{Binding AppName,
+          Source={x:Static local:BoilerplateApp.Boilerplate},
+          StringFormat={}{0} Terms &amp; Conditions}"
+        Height="720" Width="600"
+        >
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="18,6"/>
+            <Setter Property="MinWidth" Value="40"/>
+            <Setter Property="MinHeight" Value="40"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="Margin" Value="12"/>
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <WebBrowser Grid.Row="0" Margin="12" x:Name="LicenseContent"/>
+        <StackPanel Grid.Row="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    >
+            <Button IsDefault="True" FontWeight="Bold" Click="AcceptClick">Accept</Button>
+            <Button IsCancel="True" Click="DeclineClick">Decline</Button>
+        </StackPanel>
+    </Grid>
+</Window>
