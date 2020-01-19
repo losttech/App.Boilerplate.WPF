@@ -25,12 +25,12 @@ steps:
   inputs:
     command: 'custom'
     custom: 'pack'
-    arguments: '--configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)'
+    arguments: '--configuration $(buildConfiguration) --version-suffix CI-$(Build.BuildNumber)'
     packagesToPack: '**/*.csproj'
 - task: NuGetCommand@2
   displayName: 'NuGet push internal'
   inputs:
     command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+    packagesToPush: '**/*.nupkg;!**/*.symbols.nupkg'
     nuGetFeedType: 'internal'
     publishVstsFeed: '6ea7f709-397d-481c-a895-bf3cf16ec737'
