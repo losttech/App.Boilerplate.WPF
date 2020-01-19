@@ -2,10 +2,10 @@
     using LostTech.App.DataBinding;
 
     public class BoilerplateSettings : NotifyPropertyChangedBase, ICopyable<BoilerplateSettings> {
-        string acceptedTerms = null;
-        string whatsNewVersionSeen = null;
+        string? acceptedTerms = null;
+        string? whatsNewVersionSeen = null;
 
-        public string AcceptedTerms {
+        public string? AcceptedTerms {
             get => this.acceptedTerms;
             set {
                 this.acceptedTerms = value;
@@ -13,7 +13,7 @@
             }
         }
 
-        public string WhatsNewVersionSeen {
+        public string? WhatsNewVersionSeen {
             get => this.whatsNewVersionSeen;
             set {
                 this.whatsNewVersionSeen = value;

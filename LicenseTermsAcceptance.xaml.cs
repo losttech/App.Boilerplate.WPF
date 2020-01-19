@@ -17,7 +17,7 @@
         {
             this.InitializeComponent();
 
-            Stream resource = GetTermsAndCondtions();
+            Stream resource = GetTermsAndConditions();
             this.LicenseContent.NavigateToStream(resource);
             this.LicenseContent.Navigated += delegate {
                 this.LicenseContent.Navigating += (_, args) => {
@@ -33,7 +33,7 @@
             };
         }
 
-        static Stream GetTermsAndCondtions()
+        static Stream GetTermsAndConditions()
         {
             string @namespace = typeof(LicenseTermsAcceptance).Namespace;
             string resourceName = new DesktopBridge.Helpers().IsRunningAsUwp() ? "StoreTerms" : "Terms";
@@ -41,13 +41,16 @@
             return Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
         }
 
-        public static string GetTermsAndConditionsVersion()
+        public static string? GetTermsAndConditionsVersion()
         {
-            var algorithm = new SHA256CryptoServiceProvider();
-            Stream termsAndCondtions = GetTermsAndCondtions();
-            if (termsAndCondtions == null)
-                return null;
-            byte[] hash = algorithm.ComputeHash(termsAndCondtions);
+            byte[] hash;
+            using (var algorithm = new SHA256CryptoServiceProvider()) {
+                Stream termsAndConditions = GetTermsAndConditions();
+                if (termsAndConditions == null)
+                    return null;
+                hash = algorithm.ComputeHash(termsAndConditions);
+            }
+
             return Convert.ToBase64String(hash);
         }
 

@@ -1,18 +1,24 @@
-﻿namespace LostTech.App {
+﻿#pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task - always true in GUI code
+#pragma warning disable RCS1090 // Call 'ConfigureAwait(false)'. - always true in GUI code
+namespace LostTech.App {
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Diagnostics;
     using System.IO;
+    using System.Linq;
     using System.Reflection;
     using System.Runtime.CompilerServices;
-    using System.Threading;
     using System.Threading.Tasks;
     using System.Windows;
-    using System.Windows.Threading;
+
     using JetBrains.Annotations;
+
     using LostTech.App.UWP;
-    using Microsoft.HockeyApp;
+
+    using Microsoft.AppCenter;
+    using Microsoft.AppCenter.Analytics;
+    using Microsoft.AppCenter.Crashes;
     using Microsoft.Toolkit.Uwp.Notifications;
 
     using Windows.Data.Xml.Dom;
@@ -23,70 +29,50 @@
     public abstract class BoilerplateApp : Application, INotifyPropertyChanged {
         internal static readonly bool IsUwp = new DesktopBridge.Helpers().IsRunningAsUwp();
 
-        readonly DispatcherTimer updateTimer = new DispatcherTimer(DispatcherPriority.Background) {
-            Interval = TimeSpan.FromDays(1),
-            IsEnabled = true,
-        };
-        readonly DispatcherTimer heartbeat = new DispatcherTimer(DispatcherPriority.Background) {
-            Interval = TimeSpan.FromDays(14),
-            IsEnabled = true,
-        };
-
         readonly DirectoryInfo localSettingsFolder;
         readonly DirectoryInfo roamingSettingsFolder;
 
-        Settings localSettings;
-        Task<StartupResult> startupCompletion;
-        BoilerplateSettings settings;
+        Settings? localSettings;
+        Settings? roamingSettings;
+        Task<StartupResult>? startupCompletion;
+        BoilerplateSettings? settings;
 
         protected BoilerplateApp() {
-            this.localSettingsFolder = new DirectoryInfo(this.AppData.FullName);
-            this.roamingSettingsFolder = new DirectoryInfo(this.RoamingAppData.FullName);
+            this.localSettingsFolder = new DirectoryInfo(this.AppDataDirectory.FullName);
+            this.roamingSettingsFolder = new DirectoryInfo(this.RoamingAppDataDirectory.FullName);
         }
 
-        public new static BoilerplateApp Current => Application.Current as BoilerplateApp;
-        public static BoilerplateApp Boilerplate => Application.Current as BoilerplateApp;
+        public new static BoilerplateApp Current => (BoilerplateApp)Application.Current;
+        public static BoilerplateApp Boilerplate => (BoilerplateApp)Application.Current;
         public abstract string AppName { get; }
         public abstract string CompanyName { get; }
         public abstract TimeSpan HeartbeatInterval { get; }
-        public bool HeartbeatEnabled {
-            get => this.heartbeat.IsEnabled;
-            set {
-                if (this.heartbeat.IsEnabled == value)
-                    return;
 
-                this.heartbeat.IsEnabled = value;
-                this.OnPropertyChanged();
-
-                if (this.heartbeat.IsEnabled)
-                    this.TelemetryHeartbeat(this, EventArgs.Empty);
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         protected abstract WhatsNew WhatsNew { get; }
 
         protected virtual Task<StartupResult> StartupCompletion => this.startupCompletion ?? throw new InvalidOperationException();
-        protected Settings LocalSettings { get => this.localSettings ?? throw new InvalidOperationException(); }
+        protected Settings LocalSettings => this.localSettings ?? throw new InvalidOperationException();
+        protected Settings RoamingSettings => this.roamingSettings ?? throw new InvalidOperationException();
 
         protected override void OnStartup(StartupEventArgs e) {
             base.OnStartup(e);
 
-            this.startupCompletion = this.StartupImpl(e);
+            WpfWarningsService.Initialize();
+
+            this.startupCompletion = this.StartupImpl();
         }
 
-        async Task<StartupResult> StartupImpl(StartupEventArgs e) {
+        async Task<StartupResult> StartupImpl() {
             var startupResult = new StartupResult();
 
-            await this.EnableHockeyApp();
-
-            if (!IsUwp) {
-                this.BeginCheckForUpdates();
-                this.updateTimer.Tick += (_, __) => this.BeginCheckForUpdates();
-            }
+            // TODO: let user opt-in/-out
+            this.EnableTelemetry();
 
             this.localSettings = XmlSettings.Create(this.localSettingsFolder);
+            this.roamingSettings = XmlSettings.Create(this.roamingSettingsFolder);
+
             this.settings = await this.InitializeSettingsSet<BoilerplateSettings>("App.Boilerplate.xml");
 
             bool termsVersionMismatch = this.settings.AcceptedTerms != LicenseTermsAcceptance.GetTermsAndConditionsVersion();
@@ -113,7 +99,7 @@
             return startupResult;
         }
 
-        async Task<T> InitializeSettingsSet<T>(string fileName)
+        protected async Task<T> InitializeSettingsSet<T>(string fileName)
             where T : class, new() {
             SettingsSet<T, T> settingsSet;
             try {
@@ -134,58 +120,22 @@
             return settingsSet.Value;
         }
 
-        void BeginCheckForUpdates() {
-            HockeyClient.Current.CheckForUpdatesAsync(autoShowUi: true, shutdownActions: () => {
-                this.BeginShutdown();
-                return true;
-            }).GetAwaiter();
-        }
-
-        readonly DateTimeOffset bootTime = DateTimeOffset.UtcNow;
-
-        TimeSpan Uptime => DateTimeOffset.UtcNow - this.bootTime;
-
-        protected abstract string HockeyAppID { get; }
-        async Task EnableHockeyApp() {
-            string hockeyID = this.HockeyAppID;
+        protected abstract string AppCenterSecret { get; }
+        void EnableTelemetry() {
+            string hockeyID = this.AppCenterSecret;
             if (string.IsNullOrEmpty(hockeyID))
                 return;
 
-            HockeyClient.Current.Configure(hockeyID);
-            ((HockeyClient)HockeyClient.Current).OnHockeySDKInternalException += (sender, args) => {
-                if (Debugger.IsAttached) { Debugger.Break(); }
-            };
-
-            try {
-                await HockeyClient.Current.SendCrashesAsync().ConfigureAwait(false);
-            } catch (IOException e) when ((e.HResult ^ unchecked((int)0x8007_0000)) == (int)Win32ErrorCode.ERROR_NO_MORE_FILES) { }
-
-            this.heartbeat.Interval = this.HeartbeatInterval;
-            this.heartbeat.Tick += this.TelemetryHeartbeat;
-            if (this.heartbeat.IsEnabled)
-                this.TelemetryHeartbeat(this.heartbeat, EventArgs.Empty);
+            AppCenter.Start(hockeyID, typeof(Crashes), typeof(Analytics));
 
             TaskScheduler.UnobservedTaskException += TaskSchedulerOnUnobservedTaskException;
         }
 
         static void TaskSchedulerOnUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e) {
             foreach (Exception exception in e.Exception.Flatten().InnerExceptions)
-                HockeyClient.Current.TrackException(exception,
+                Crashes.TrackError(exception,
                     properties: new Dictionary<string, string> { ["unobserved"] = "true" });
         }
-
-        void TelemetryHeartbeat(object sender, EventArgs e) {
-            var eventData = new Dictionary<string, string> {
-                [nameof(this.HeartbeatInterval)] = Invariant($"{this.HeartbeatInterval.TotalMinutes}"),
-                [nameof(this.Version)] = Invariant($"{this.Version}"),
-                [nameof(this.Uptime)] = Invariant($"{this.Uptime}"),
-                [nameof(IsUwp)] = Invariant($"{IsUwp}"),
-            };
-            this.FillHeartbeatData(eventData);
-            HockeyClient.Current.TrackEvent("Heartbeat", eventData);
-        }
-
-        protected virtual void FillHeartbeatData(IDictionary<string, string> eventData) { }
 
         static void EnableJitDebugging() {
             AppDomain.CurrentDomain.UnhandledException += (_, args) => Debugger.Launch();
@@ -193,7 +143,9 @@
 
         // can't inline because of crashes on Windows before 10
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public void ShowNotification(string title, string message, Uri navigateTo, TimeSpan? duration = null) {
+        public void ShowNotification(string? title, string message, [NotNull] Uri navigateTo, TimeSpan? duration = null) {
+            if (navigateTo == null) throw new ArgumentNullException(nameof(navigateTo));
+
             var content = new ToastContent {
                 Launch = navigateTo.ToString(),
 
@@ -215,18 +167,17 @@
             try {
                 DesktopNotificationManagerCompat.CreateToastNotifier().Show(toast);
             } catch (Exception e) {
-                e.ReportAsWarning(prefix: $"Notification failed");
+                WarningsService.Default.ReportAsWarning(e, prefix: $"Notification failed");
             }
         }
 
         protected virtual async Task DisposeAsync() {
-            Settings settings = this.localSettings;
-            if (settings != null) {
-                settings.ScheduleSave();
-                await settings.DisposeAsync();
-                this.localSettings = null;
-                Debug.WriteLine("settings written");
-            }
+            Settings?[] settingsToDispose = { this.localSettings, this.roamingSettings };
+            await Task.WhenAll(settingsToDispose.Select(async setToDispose => {
+                if (setToDispose is null) return;
+                setToDispose.ScheduleSave();
+                await setToDispose.DisposeAsync().ConfigureAwait(false);
+            }));
         }
 
         public async void BeginShutdown() {
@@ -237,15 +188,9 @@
             this.Shutdown();
         }
 
-        protected override void OnExit(ExitEventArgs exitArgs) {
-            base.OnExit(exitArgs);
-            HockeyClient.Current.Flush();
-            Thread.Sleep(1000);
-        }
-
         internal static Assembly GetResourceContainer() => Assembly.GetExecutingAssembly();
 
-        public DirectoryInfo AppData {
+        public DirectoryInfo AppDataDirectory {
             get {
                 string path;
                 if (IsUwp) {
@@ -262,7 +207,7 @@
         [MethodImpl(MethodImplOptions.NoInlining)]
         static string GetUwpAppData() => global::Windows.Storage.ApplicationData.Current.LocalFolder.Path;
 
-        public DirectoryInfo RoamingAppData {
+        public DirectoryInfo RoamingAppDataDirectory {
             get {
                 string path;
                 if (IsUwp) {
@@ -293,7 +238,7 @@
         }
 
         [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) =>
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

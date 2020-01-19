@@ -2,6 +2,7 @@
     using System;
     using System.Diagnostics;
     using System.Runtime.InteropServices;
+    using Microsoft.Toolkit.Uwp.Notifications;
 
     [ClassInterface(ClassInterfaceType.None)]
     [ComSourceInterfaces(typeof(INotificationActivationCallback))]
