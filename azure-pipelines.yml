@@ -1,0 +1,30 @@
+name: '$(Date:yyyy.MM.dd)$(Rev:.rrr)'
+
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-2019'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet restore'
+  inputs:
+    command: restore
+    projects: '**/*.csproj'
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet pack'
+  inputs:
+    command: 'pack'
+    arguments: '--configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)'
+    packagesToPack: '**/*.csproj'
+- task: NuGetCommand@2
+  displayName: 'NuGet push internal'
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: '6ea7f709-397d-481c-a895-bf3cf16ec737'
