@@ -6,6 +6,16 @@
     <RootNamespace>LostTech.App</RootNamespace>
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
+    <VersionPrefix>0.0.1</VersionPrefix>
+    <Authors>Victor Milovanov</Authors>
+    <Company>Lost Tech LLC</Company>
+    <Description>Boilerplate for WPF apps</Description>
+    <PackageTags>apps wpf</PackageTags>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Copyright>© 2020 Lost Tech LLC</Copyright>
+    <PackageProjectUrl>https://github.com/losttech/App.Boilerplate.WPF</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/losttech/App.Boilerplate.WPF.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
