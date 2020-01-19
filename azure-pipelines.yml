@@ -23,7 +23,8 @@ steps:
 - task: DotNetCoreCLI@2
   displayName: 'dotnet pack'
   inputs:
-    command: 'pack'
+    command: 'custom'
+    custom: 'pack'
     arguments: '--configuration $(buildConfiguration) --version-suffix $(Build.BuildNumber)'
     packagesToPack: '**/*.csproj'
 - task: NuGetCommand@2
