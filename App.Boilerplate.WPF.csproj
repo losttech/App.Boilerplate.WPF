@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>LostTech.App.Boilerplate.WPF</AssemblyName>
     <RootNamespace>LostTech.App</RootNamespace>
     <LangVersion>8.0</LangVersion>
@@ -16,6 +16,7 @@
     <PackageProjectUrl>https://github.com/losttech/App.Boilerplate.WPF</PackageProjectUrl>
     <RepositoryUrl>https://github.com/losttech/App.Boilerplate.WPF.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <UseWPF>true</UseWPF>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,29 +36,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="WindowsBase" />
     <Reference Include="Windows">
-      <HintPath>C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.18362.0\Windows.winmd</HintPath>
+      <HintPath>$(MSBuildProgramFiles32)\Windows Kits\10\UnionMetadata\10.0.18362.0\Windows.winmd</HintPath>
+      <Private>False</Private>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- XAML elements -->
-    <Page Include="**\*.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </Page>
-    <Compile Update="**\*.xaml.cs" SubType="Code" DependentUpon="%(Filename)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="LicenseTermsAcceptance.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </None>
   </ItemGroup>
 
 </Project>
