@@ -85,6 +85,7 @@ namespace LostTech.App {
                 }
                 termsWindow.Close();
                 this.settings.AcceptedTerms = LicenseTermsAcceptance.GetTermsAndConditionsVersion();
+                startupResult.TermsUpdated = true;
             }
 
             string version = Invariant($"{this.Version.Major}.{this.Version.Minor}");
