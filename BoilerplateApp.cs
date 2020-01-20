@@ -26,7 +26,7 @@ namespace LostTech.App {
 
     using static System.FormattableString;
 
-    public abstract class BoilerplateApp : Application, INotifyPropertyChanged {
+    public abstract class BoilerplateApp : Application, INotifyPropertyChanged, IAsyncDisposable {
         internal static readonly bool IsUwp = new DesktopBridge.Helpers().IsRunningAsUwp();
 
         readonly DirectoryInfo localSettingsFolder;
@@ -171,7 +171,7 @@ namespace LostTech.App {
             }
         }
 
-        protected virtual async Task DisposeAsync() {
+        public virtual async ValueTask DisposeAsync() {
             Settings?[] settingsToDispose = { this.localSettings, this.roamingSettings };
             await Task.WhenAll(settingsToDispose.Select(async setToDispose => {
                 if (setToDispose is null) return;
