@@ -10,7 +10,10 @@
     public class UrlNotificationActivator : NotificationActivator {
         public override void OnActivated(string arguments, NotificationUserInput userInput, string appUserModelId) {
             var uri = new Uri(arguments, UriKind.Absolute);
-            Process.Start(uri.ToString());
+            var startInfo = new ProcessStartInfo(uri.ToString()) {
+                UseShellExecute = true,
+            };
+            Process.Start(startInfo);
         }
     }
 }

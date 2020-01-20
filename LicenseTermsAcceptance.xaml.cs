@@ -27,8 +27,12 @@
                         return;
                     if (new DesktopBridge.Helpers().IsRunningAsUwp())
                         Launcher.LaunchUriAsync(args.Uri).GetAwaiter();
-                    else
-                        Process.Start(args.Uri.AbsoluteUri);
+                    else {
+                        var startInfo = new ProcessStartInfo(args.Uri.AbsoluteUri) {
+                            UseShellExecute = true,
+                        };
+                        Process.Start(startInfo);
+                    }
                 };
             };
         }

@@ -233,7 +233,10 @@ namespace LostTech.App {
         public static void StartNewInstance() { Process.Start(Process.GetCurrentProcess().MainModule.FileName); }
 
         public static void StartNewInstanceAsAdmin() {
-            var startInfo = new ProcessStartInfo(Process.GetCurrentProcess().MainModule.FileName) { Verb = "runas" };
+            var startInfo = new ProcessStartInfo(Process.GetCurrentProcess().MainModule.FileName) {
+                Verb = "runas",
+                UseShellExecute = true,
+            };
             Process.Start(startInfo);
         }
 
