@@ -221,6 +221,16 @@ namespace LostTech.App {
             }
         }
 
+        public void Launch([NotNull] Uri uri) {
+            if (uri == null) throw new ArgumentNullException(nameof(uri));
+            if (!uri.IsAbsoluteUri) throw new ArgumentException(message: "Must be absolute URI", paramName: nameof(uri));
+
+            var startInfo = new ProcessStartInfo(uri.AbsoluteUri) {
+                UseShellExecute = true,
+            };
+            Process.Start(startInfo);
+        }
+
         // can't inline because of crashes on Windows before 10
         [MethodImpl(MethodImplOptions.NoInlining)]
         static string GetUwpRoamingAppData() => global::Windows.Storage.ApplicationData.Current.RoamingFolder.Path;
