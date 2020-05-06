@@ -142,9 +142,27 @@ namespace LostTech.App {
             AppDomain.CurrentDomain.UnhandledException += (_, args) => Debugger.Launch();
         }
 
+        static bool modernNotificationsUnavailable;
+        public void ShowNotification(string? title, string message, [NotNull] Uri navigateTo, TimeSpan? duration = null) {
+            if (modernNotificationsUnavailable) {
+                if (MessageBox.Show(messageBoxText: message, caption: title,
+                        MessageBoxButton.OKCancel, MessageBoxImage.Information) == MessageBoxResult.OK) {
+                    this.Launch(navigateTo);
+                }
+                return;
+            }
+
+            try {
+                ShowModernNotification(title, message, navigateTo, duration);
+            } catch (TypeLoadException) {
+                modernNotificationsUnavailable = true;
+                this.ShowNotification(title, message, navigateTo, duration);
+            }
+        }
+
         // can't inline because of crashes on Windows before 10
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public void ShowNotification(string? title, string message, [NotNull] Uri navigateTo, TimeSpan? duration = null) {
+        static void ShowModernNotification(string? title, string message, [NotNull] Uri navigateTo, TimeSpan? duration = null) {
             if (navigateTo == null) throw new ArgumentNullException(nameof(navigateTo));
 
             var content = new ToastContent {
