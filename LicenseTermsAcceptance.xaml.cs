@@ -39,10 +39,10 @@
 
         static Stream GetTermsAndConditions()
         {
-            string @namespace = typeof(LicenseTermsAcceptance).Namespace;
+            string @namespace = typeof(LicenseTermsAcceptance).Namespace!;
             string resourceName = new DesktopBridge.Helpers().IsRunningAsUwp() ? "StoreTerms" : "Terms";
             resourceName = $"{@namespace}.{resourceName}.html";
-            return Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
+            return Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName)!;
         }
 
         public static string? GetTermsAndConditionsVersion()

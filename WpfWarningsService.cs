@@ -6,7 +6,7 @@
     class WpfWarningsService: IWarningsService {
         public void Warn(Exception exception, string userFriendlyMessage, IReadOnlyDictionary<string, object?>? properties = null)
             => Crashes.TrackError(exception,
-                properties.ToDictionary(
+                properties?.ToDictionary(
                     keySelector: kv => kv.Key,
                     elementSelector: kv => kv.Value?.ToString() ?? "<null>")
             );

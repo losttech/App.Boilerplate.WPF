@@ -1,5 +1,4 @@
-﻿#pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task - always true in GUI code
-#pragma warning disable RCS1090 // Call 'ConfigureAwait(false)'. - always true in GUI code
+﻿#pragma warning disable RCS1090 // Call 'ConfigureAwait(false)'. - always true in GUI code
 namespace LostTech.App {
     using System;
     using System.Collections.Generic;
@@ -88,7 +87,9 @@ namespace LostTech.App {
                 startupResult.TermsUpdated = true;
             }
 
-            string version = Invariant($"{this.Version.Major}.{this.Version.Minor}");
+            string version = this.Version is null
+                ? "N/A"
+                : Invariant($"{this.Version.Major}.{this.Version.Minor}");
             if (this.settings.WhatsNewVersionSeen != version && this.WhatsNew != null) {
                 this.ShowNotification(title: this.WhatsNew.Title,
                     message: this.WhatsNew.Message,
@@ -104,7 +105,7 @@ namespace LostTech.App {
             where T : class, new() {
             SettingsSet<T, T> settingsSet;
             try {
-                settingsSet = await this.localSettings.LoadOrCreate<T>(fileName);
+                settingsSet = await this.localSettings!.LoadOrCreate<T>(fileName);
             } catch (Exception settingsError) {
                 string errorFile = Path.Combine(this.localSettingsFolder.FullName, $"{fileName}.err");
                 File.Create(errorFile).Close();
@@ -114,7 +115,7 @@ namespace LostTech.App {
                 string brokenBackup = Path.Combine(this.localSettingsFolder.FullName, $"Err.{fileName}");
                 File.Copy(brokenFile, destFileName: brokenBackup, overwrite: true);
                 File.Delete(brokenFile);
-                settingsSet = await this.localSettings.LoadOrCreate<T>(fileName);
+                settingsSet = await this.localSettings!.LoadOrCreate<T>(fileName);
                 settingsSet.ScheduleSave();
             }
             settingsSet.Autosave = true;
@@ -132,7 +133,7 @@ namespace LostTech.App {
             TaskScheduler.UnobservedTaskException += TaskSchedulerOnUnobservedTaskException;
         }
 
-        static void TaskSchedulerOnUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e) {
+        static void TaskSchedulerOnUnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e) {
             foreach (Exception exception in e.Exception.Flatten().InnerExceptions)
                 Crashes.TrackError(exception,
                     properties: new Dictionary<string, string> { ["unobserved"] = "true" });
@@ -143,10 +144,12 @@ namespace LostTech.App {
         }
 
         static bool modernNotificationsUnavailable;
-        public void ShowNotification(string? title, string message, [NotNull] Uri navigateTo, TimeSpan? duration = null) {
+        public void ShowNotification(string? title, string message, Uri? navigateTo, TimeSpan? duration = null) {
             if (modernNotificationsUnavailable) {
+                var buttons = navigateTo is null ? MessageBoxButton.OK : MessageBoxButton.OKCancel;
                 if (MessageBox.Show(messageBoxText: message, caption: title,
-                        MessageBoxButton.OKCancel, MessageBoxImage.Information) == MessageBoxResult.OK) {
+                                    buttons, MessageBoxImage.Information) == MessageBoxResult.OK
+                    && navigateTo is not null) {
                     this.Launch(navigateTo);
                 }
                 return;
@@ -162,13 +165,11 @@ namespace LostTech.App {
 
         // can't inline because of crashes on Windows before 10
         [MethodImpl(MethodImplOptions.NoInlining)]
-        static void ShowModernNotification(string? title, string message, [NotNull] Uri navigateTo, TimeSpan? duration = null) {
-            if (navigateTo == null) throw new ArgumentNullException(nameof(navigateTo));
-
+        static void ShowModernNotification(string? title, string message, Uri? navigateTo, TimeSpan? duration = null) {
             var content = new ToastContent {
-                Launch = navigateTo.ToString(),
+                Launch = navigateTo?.ToString(),
 
-                Header = title == null ? null : new ToastHeader(title, title, navigateTo.ToString()),
+                Header = title == null ? null : new ToastHeader(title, title, navigateTo?.ToString()),
 
                 Visual = new ToastVisual {
                     BindingGeneric = new ToastBindingGeneric {
@@ -184,7 +185,7 @@ namespace LostTech.App {
                 ExpirationTime = DateTimeOffset.Now + duration,
             };
             try {
-                DesktopNotificationManagerCompat.CreateToastNotifier().Show(toast);
+                ToastNotificationManagerCompat.CreateToastNotifier().Show(toast);
             } catch (Exception e) {
                 WarningsService.Default.ReportAsWarning(e, prefix: $"Notification failed");
             }
@@ -239,7 +240,7 @@ namespace LostTech.App {
             }
         }
 
-        public void Launch([NotNull] Uri uri) {
+        public void Launch(Uri uri) {
             if (uri == null) throw new ArgumentNullException(nameof(uri));
             if (!uri.IsAbsoluteUri) throw new ArgumentException(message: "Must be absolute URI", paramName: nameof(uri));
 
@@ -253,20 +254,25 @@ namespace LostTech.App {
         [MethodImpl(MethodImplOptions.NoInlining)]
         static string GetUwpRoamingAppData() => global::Windows.Storage.ApplicationData.Current.RoamingFolder.Path;
 
-        public Version Version => IsUwp
+        public Version? Version => IsUwp
             ? GetUwpVersion()
-            : Assembly.GetEntryAssembly().GetName().Version;
+            : Assembly.GetEntryAssembly()?.GetName().Version;
         [MethodImpl(MethodImplOptions.NoInlining)]
         static Version GetUwpVersion() => global::Windows.ApplicationModel.Package.Current.Id.Version.ToVersion();
 
-        public static void StartNewInstance() { Process.Start(Process.GetCurrentProcess().MainModule.FileName); }
+        public static void StartNewInstance() { Process.Start(GetExecutablePath()); }
 
         public static void StartNewInstanceAsAdmin() {
-            var startInfo = new ProcessStartInfo(Process.GetCurrentProcess().MainModule.FileName) {
+            var startInfo = new ProcessStartInfo(GetExecutablePath()) {
                 Verb = "runas",
                 UseShellExecute = true,
             };
             Process.Start(startInfo);
+        }
+
+        static string GetExecutablePath() {
+            return Process.GetCurrentProcess().MainModule?.FileName
+                ?? throw new NotSupportedException("Unable to get executable path");
         }
 
         [NotifyPropertyChangedInvocator]

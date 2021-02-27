@@ -11,10 +11,10 @@ variables:
 
 steps:
 - task: UseDotNet@2
-  displayName: 'Use .NET Core 3.1.x'
+  displayName: 'Use .NET 5.0.x'
   inputs:
     packageType: sdk
-    version: 3.1.x
+    version: 5.0.x
 - task: DotNetCoreCLI@2
   displayName: 'dotnet restore'
   inputs:

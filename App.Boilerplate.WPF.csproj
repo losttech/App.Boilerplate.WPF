@@ -1,18 +1,17 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0-windows10.0.18362.0</TargetFramework>
     <AssemblyName>LostTech.App.Boilerplate.WPF</AssemblyName>
     <RootNamespace>LostTech.App</RootNamespace>
-    <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
-    <VersionPrefix>0.0.2</VersionPrefix>
+    <VersionPrefix>0.0.3</VersionPrefix>
     <Authors>Victor Milovanov</Authors>
     <Company>Lost Tech LLC</Company>
     <Description>Boilerplate for WPF apps</Description>
     <PackageTags>apps wpf</PackageTags>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <Copyright>© 2020 Lost Tech LLC</Copyright>
+    <Copyright>© 2021 Lost Tech LLC</Copyright>
     <PackageProjectUrl>https://github.com/losttech/App.Boilerplate.WPF</PackageProjectUrl>
     <RepositoryUrl>https://github.com/losttech/App.Boilerplate.WPF.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -20,27 +19,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DesktopBridge.Helpers" Version="1.2.1" />
-    <PackageReference Include="JetBrains.Annotations" Version="2019.1.3" />
+    <PackageReference Include="DesktopBridge.Helpers" Version="1.2.2" />
     <PackageReference Include="LostTech.App.Boilerplate" Version="0.2.2" />
     <PackageReference Include="LostTech.App.XmlSettings" Version="0.2.0" />
-    <PackageReference Include="Microsoft.AppCenter.Analytics" Version="2.6.4" />
-    <PackageReference Include="Microsoft.AppCenter.Crashes" Version="2.6.4" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="6.0.0" />
-    <PackageReference Include="System.Runtime.WindowsRuntime" Version="4.7.0" />
+    <PackageReference Include="Microsoft.AppCenter.Analytics" Version="4.1.0" />
+    <PackageReference Include="Microsoft.AppCenter.Crashes" Version="4.1.0" />
+    <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.0.0-preview5" />
     <PackageReference Include="System.Threading.Tasks" Version="4.3.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Windows">
-      <HintPath>$(MSBuildProgramFiles32)\Windows Kits\10\UnionMetadata\10.0.18362.0\Windows.winmd</HintPath>
-      <Private>False</Private>
-      <IsWinMDFile>true</IsWinMDFile>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>
