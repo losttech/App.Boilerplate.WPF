@@ -27,7 +27,7 @@
 
   <ItemGroup>
     <PackageReference Include="DesktopBridge.Helpers" Version="1.2.2" />
-    <PackageReference Include="LostTech.App.Boilerplate" Version="0.2.2" />
+    <PackageReference Include="LostTech.App.Boilerplate" Version="0.2.3" />
     <PackageReference Include="LostTech.App.XmlSettings" Version="0.3.0" />
     <PackageReference Include="Microsoft.AppCenter.Analytics" Version="4.5.3" />
     <PackageReference Include="Microsoft.AppCenter.Crashes" Version="4.5.3" />
