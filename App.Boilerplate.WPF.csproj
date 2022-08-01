@@ -5,17 +5,24 @@
     <AssemblyName>LostTech.App.Boilerplate.WPF</AssemblyName>
     <RootNamespace>LostTech.App</RootNamespace>
     <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+
     <VersionPrefix>0.0.4</VersionPrefix>
     <Authors>Victor Milovanov</Authors>
     <Company>Lost Tech LLC</Company>
     <Description>Boilerplate for WPF apps</Description>
     <PackageTags>apps wpf</PackageTags>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <Copyright>© 2021 Lost Tech LLC</Copyright>
+    <Copyright>© 2022 Lost Tech LLC</Copyright>
     <PackageProjectUrl>https://github.com/losttech/App.Boilerplate.WPF</PackageProjectUrl>
     <RepositoryUrl>https://github.com/losttech/App.Boilerplate.WPF.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <UseWPF>true</UseWPF>
+
+    <!-- The following is recommended for public projects -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <DebugSymbols>true</DebugSymbols>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +33,8 @@
     <PackageReference Include="Microsoft.AppCenter.Crashes" Version="4.5.3" />
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.2" />
     <PackageReference Include="System.Threading.Tasks" Version="4.3.0" />
+    <!-- The following is recommended for public projects -->
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>

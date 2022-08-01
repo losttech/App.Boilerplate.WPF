@@ -48,7 +48,7 @@
         public static string? GetTermsAndConditionsVersion()
         {
             byte[] hash;
-            using (var algorithm = new SHA256CryptoServiceProvider()) {
+            using (var algorithm = SHA256.Create()) {
                 Stream termsAndConditions = GetTermsAndConditions();
                 if (termsAndConditions == null)
                     return null;
