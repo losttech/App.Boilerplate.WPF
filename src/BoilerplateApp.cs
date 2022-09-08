@@ -166,10 +166,11 @@ namespace LostTech.App {
         // can't inline because of crashes on Windows before 10
         [MethodImpl(MethodImplOptions.NoInlining)]
         static void ShowModernNotification(string? title, string message, Uri? navigateTo, TimeSpan? duration = null) {
+            var header = title == null ? null : new ToastHeader(title, title, navigateTo?.ToString());
             var content = new ToastContent {
                 Launch = navigateTo?.ToString(),
 
-                Header = title == null ? null : new ToastHeader(title, title, navigateTo?.ToString()),
+                Header = header,
 
                 Visual = new ToastVisual {
                     BindingGeneric = new ToastBindingGeneric {
@@ -178,8 +179,11 @@ namespace LostTech.App {
                 }
             };
 
-            if (navigateTo is not null)
+            if (navigateTo is not null) {
                 content.ActivationType = ToastActivationType.Protocol;
+                if (header is not null)
+                    header.ActivationType = ToastActivationType.Protocol;
+            }
 
             var contentXml = new XmlDocument();
             contentXml.LoadXml(content.GetContent());
