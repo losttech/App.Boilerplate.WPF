@@ -13,6 +13,7 @@
     <Description>Boilerplate for WPF apps</Description>
     <PackageTags>apps wpf</PackageTags>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <Copyright>© 2022 Lost Tech LLC</Copyright>
     <PackageProjectUrl>https://github.com/losttech/App.Boilerplate.WPF</PackageProjectUrl>
     <RepositoryUrl>https://github.com/losttech/App.Boilerplate.WPF.git</RepositoryUrl>
@@ -39,6 +40,10 @@
 
   <ItemGroup>
     <None Include="LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="README.md">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

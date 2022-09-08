@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27906.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App.Boilerplate.WPF", "App.Boilerplate.WPF.csproj", "{C97E4FF1-D694-4421-9EB9-2867F3327361}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App.Boilerplate.WPF", "src\App.Boilerplate.WPF.csproj", "{C97E4FF1-D694-4421-9EB9-2867F3327361}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
