@@ -49,7 +49,7 @@ namespace LostTech.App {
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected abstract WhatsNew WhatsNew { get; }
+        protected abstract WhatsNew? WhatsNew { get; }
 
         protected virtual Task<StartupResult> StartupCompletion => this.startupCompletion ?? throw new InvalidOperationException();
         protected Settings LocalSettings => this.localSettings ?? throw new InvalidOperationException();
@@ -122,9 +122,9 @@ namespace LostTech.App {
             return settingsSet.Value;
         }
 
-        protected abstract string AppCenterSecret { get; }
+        protected abstract string? AppCenterSecret { get; }
         void EnableTelemetry() {
-            string hockeyID = this.AppCenterSecret;
+            string? hockeyID = this.AppCenterSecret;
             if (string.IsNullOrEmpty(hockeyID))
                 return;
 
@@ -177,6 +177,9 @@ namespace LostTech.App {
                     }
                 }
             };
+
+            if (navigateTo is not null)
+                content.ActivationType = ToastActivationType.Protocol;
 
             var contentXml = new XmlDocument();
             contentXml.LoadXml(content.GetContent());
