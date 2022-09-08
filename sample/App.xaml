@@ -1,0 +1,9 @@
+﻿<local:BoilerplateApp x:Class="LostTech.App.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:LostTech.App;assembly=LostTech.App.Boilerplate.WPF"
+             StartupUri="MainWindow.xaml">
+  <Application.Resources>
+
+  </Application.Resources>
+</local:BoilerplateApp>

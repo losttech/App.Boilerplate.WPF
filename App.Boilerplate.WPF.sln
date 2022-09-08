@@ -1,9 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27906.1
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32819.101
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App.Boilerplate.WPF", "src\App.Boilerplate.WPF.csproj", "{C97E4FF1-D694-4421-9EB9-2867F3327361}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Repo", "Repo", "{F849DC0C-DD60-4A05-92B8-561DE5BBE670}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		azure-pipelines.yml = azure-pipelines.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfBoilerplateSample", "sample\WpfBoilerplateSample.csproj", "{A4E67443-5A38-426D-86CA-82A2794AE4B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +23,10 @@ Global
 		{C97E4FF1-D694-4421-9EB9-2867F3327361}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C97E4FF1-D694-4421-9EB9-2867F3327361}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C97E4FF1-D694-4421-9EB9-2867F3327361}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4E67443-5A38-426D-86CA-82A2794AE4B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4E67443-5A38-426D-86CA-82A2794AE4B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4E67443-5A38-426D-86CA-82A2794AE4B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4E67443-5A38-426D-86CA-82A2794AE4B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
